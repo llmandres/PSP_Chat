@@ -26,6 +26,7 @@ public class SocketServidor {
 
         
                 socketAlCliente = serverSocket.accept();
+                System.out.println("Conectado");
                 arraySockets.put(Thread.currentThread() ,socketAlCliente);
 
 

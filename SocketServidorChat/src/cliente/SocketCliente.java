@@ -10,80 +10,72 @@ import java.net.UnknownHostException;
 import java.util.Scanner;
 
 public class SocketCliente {
-	
-	public static final int PUERTO = 4951;
-	public static final String IP_SERVER = "172.26.100.176";
-	
-	public static void main(String[] args) {
-		System.out.println("        CHAT CLIENTE         ");
-		System.out.println("-----------------------------------");
-		
-		InetSocketAddress direccionServidor = new InetSocketAddress(IP_SERVER, PUERTO);
-		try (Scanner sc = new Scanner(System.in)){
-			System.out.println("Introduzca el nombre");
-			String nombre =sc.nextLine();
-			
-			System.out.println("CLIENTE: Conectando con el servidor ....");
-			Socket socketAlServidor = new Socket();
-			socketAlServidor.connect(direccionServidor);
-			System.out.println("CLIENTE: Conexion establecida... a " + IP_SERVER + 
-					" por el puerto " + PUERTO);
+    
+    public static final int PUERTO = 4951;
+    public static final String IP_SERVER = "172.26.100.176";
+    
+    public static void main(String[] args) {
+        System.out.println("        CHAT CLIENTE         ");
+        System.out.println("-----------------------------------");
+        
+        InetSocketAddress direccionServidor = new InetSocketAddress(IP_SERVER, PUERTO);
+        try (Scanner sc = new Scanner(System.in)) {
 
-			InputStreamReader entrada = new InputStreamReader(socketAlServidor.getInputStream());
-			BufferedReader entradaBuffer = new BufferedReader(entrada);
-			
-			PrintStream salida = new PrintStream(socketAlServidor.getOutputStream());
-			 salida.println(nombre);
+            System.out.println("Introduzca el nombre:");
+            String nombre = sc.nextLine();
+            
 
-			 	String serverMessage = entradaBuffer.readLine();
-	            System.out.println("SERVER: " + serverMessage); 
+            System.out.println("CLIENTE: Conectando con el servidor ....");
+            Socket socketAlServidor = new Socket();
+            socketAlServidor.connect(direccionServidor);
+            System.out.println("CLIENTE: Conexion establecida... a " + IP_SERVER + 
+                    " por el puerto " + PUERTO);
 
-	            System.out.println("CLIENTE: Introduzca el nombre:");
-	            String nombre1 = sc.nextLine();
-	            salida.println(nombre1);
-	            String texto = "";
-	            boolean continuar = true;
-	            do {
-	                System.out.println("CLIENTE: Escribe mensaje (salir para terminar): ");
-	                texto = sc.nextLine();
-
-	                salida.println(texto);
-
-	                if ("salir".equalsIgnoreCase(texto)) {
-	                    continuar = false; 
-	                } else {
-	                    String respuesta = entradaBuffer.readLine();
-	                    System.out.println(respuesta);;
-
-	                    if (respuesta == null) {
-	                        System.err.println("El servidor ha cerrado la conexión.");
-	                        break;
-	                    } else {
-	                        System.out.println( respuesta);
-	                    }
-	                }
-
-	            } while (continuar);
+            InputStreamReader entrada = new InputStreamReader(socketAlServidor.getInputStream());
+            BufferedReader entradaBuffer = new BufferedReader(entrada);
+            
+            PrintStream salida = new PrintStream(socketAlServidor.getOutputStream());
+            salida.println(nombre);  
 
 
-	            socketAlServidor.close();
-	            System.out.println("CLIENTE: Conexion cerrada.");
+            String serverMessage = entradaBuffer.readLine();
+            System.out.println("SERVER: " + serverMessage); 
 
-			socketAlServidor.close();
-		} catch (UnknownHostException e) {
-			System.err.println("CLIENTE: No encuentro el servidor en la direcci�n" + IP_SERVER);
-			e.printStackTrace();
-		} catch (IOException e) {
-			System.err.println("CLIENTE: Error de entrada/salida");
-			e.printStackTrace();
-		} catch (Exception e) {
-			System.err.println("CLIENTE: Error -> " + e);
-			e.printStackTrace();
-		}
-		
-		System.out.println("CLIENTE: Fin del programa");
-	
+   
+            String texto = "";
+            boolean continuar = true;
+            do {
+    
+                System.out.println("CLIENTE: Escribe mensaje (salir para terminar): ");
+                texto = sc.nextLine();
+                salida.println(texto); 
 
-	}
+                if ("salir".equalsIgnoreCase(texto)) {
+                    continuar = false; 
+                } else {
+                    String respuesta = entradaBuffer.readLine(); 
+                    if (respuesta == null) {
+                        System.err.println("El servidor ha cerrado la conexión.");
+                        break;
+                    } else {
+                        System.out.println(respuesta); 
+                    }
+                }
 
+            } while (continuar); 
+            
+            socketAlServidor.close();
+            System.out.println("CLIENTE: Conexion cerrada.");
+        } catch (UnknownHostException e) {
+            System.err.println("CLIENTE: No encuentro el servidor en la dirección " + IP_SERVER);
+            e.printStackTrace();
+        } catch (IOException e) {
+            System.err.println("CLIENTE: Error de entrada/salida");
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("CLIENTE: Error -> " + e);
+            e.printStackTrace();
+        }
+        
+    }
 }

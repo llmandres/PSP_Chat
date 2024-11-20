@@ -72,7 +72,7 @@ public class Chat implements Runnable {
 
         arraySockets.forEach((thread, socket) -> {
             try {
-                PrintStream salida = new PrintStream(socket.getOutputStream());
+                PrintStream salida = new PrintStream(this.arraySockets.get(Thread.currentThread()).getOutputStream());
                 salida.println(mensaje); 
             } catch (IOException e) {
                 System.err.println("Error al enviar mensaje a " + thread.getName() + ": " + e.getMessage());
