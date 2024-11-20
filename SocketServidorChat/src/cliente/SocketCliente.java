@@ -41,7 +41,7 @@ public class SocketCliente {
                 try {
                     String serverMessage;
                     while ((serverMessage = entradaBuffer.readLine()) != null) {
-                        System.out.println("SERVER: " + serverMessage);
+                        System.out.println(serverMessage);
                     }
                 } catch (IOException e) {
                     System.err.println("CLIENTE: Error al recibir mensaje: " + e.getMessage());
