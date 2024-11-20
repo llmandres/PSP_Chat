@@ -5,7 +5,9 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class SocketServidor {
@@ -19,16 +21,16 @@ public class SocketServidor {
         try (ServerSocket serverSocket = new ServerSocket()) {
             serverSocket.bind(direccion);
             System.out.println("Esperando Peticiones");
-            List<Socket> arraySocket = new ArrayList<Socket>();
+            Map<Thread, Socket> arraySockets = new HashMap<>();
             while(true) {
 
         
                 socketAlCliente = serverSocket.accept();
                 System.out.println("Jugador conectado, esperando al segundo...");
-                arraySocket.add(socketAlCliente);
+                arraySockets.put(Thread.currentThread() ,socketAlCliente);
 
 
-            new Thread(new Chat(arraySocket)).start();
+            new Thread(new Chat(arraySockets, socketAlCliente)).start();
             }
         } catch (IOException io) {
             System.err.println("Error en el servidor: " + io.getMessage());
