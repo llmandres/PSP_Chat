@@ -11,21 +11,18 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Chat implements Runnable {
     private String nombre;
     private static int contador = 0;
-    private Map<Thread, Socket> arraySockets;
+    private static final Map<Thread, Socket> arraySockets = new ConcurrentHashMap<>();  // ConcurrentMap para seguridad
     private Socket socket;
 
-    public Chat(Map<Thread, Socket> arraySocket, Socket socketAlCliente) {
-        this.arraySockets = arraySocket;
+    public Chat(Map<Thread, Socket> arraySockets, Socket socketAlCliente) {
         this.socket = socketAlCliente;
-        this.nombre = "Usuario " + (++contador); //Nombre por defecto
+        this.nombre = "Usuario " + (++contador); // Nombre por defecto
     }
 
     @Override
     public void run() {
-
         recogerUsuario();
         enviarMensajeATodos("** " + this.nombre + " se ha unido al chat **");
-
         mensajeRecibidoyEnviar();
     }
 
@@ -33,14 +30,14 @@ public class Chat implements Runnable {
         try {
             InputStreamReader entrada = new InputStreamReader(this.socket.getInputStream());
             BufferedReader entradaBuffer = new BufferedReader(entrada);
-            
-
             String nombreCliente = entradaBuffer.readLine();
             if (nombreCliente != null && !nombreCliente.trim().isEmpty()) {
                 this.nombre = nombreCliente;
             } else {
                 this.nombre = "Usuario" + contador;  
             }
+            // Añadir socket a la lista de clientes conectados
+            arraySockets.put(Thread.currentThread(), this.socket);
         } catch (IOException e) {
             System.err.println("Error al recoger el nombre del usuario: " + e.getMessage());
         }
@@ -48,7 +45,6 @@ public class Chat implements Runnable {
 
     public void mensajeRecibidoyEnviar() {
         try {
-  
             InputStreamReader entrada = new InputStreamReader(socket.getInputStream());
             BufferedReader entradaBuffer = new BufferedReader(entrada);
             String mensaje;
@@ -57,10 +53,9 @@ public class Chat implements Runnable {
                 if (mensaje.equalsIgnoreCase("salir")) {
                     enviarMensajeATodos(nombre + " ha salido");
                     cerrarConexion();
-                    break; 
+                    break;
                 } else {
-                    
-                    enviarMensajeATodos(nombre + ": " + mensaje);
+                    enviarMensajeATodos(nombre + ": " + mensaje);  // Enviar mensaje a todos los conectados
                 }
             }
         } catch (IOException e) {
@@ -69,11 +64,11 @@ public class Chat implements Runnable {
     }
 
     public void enviarMensajeATodos(String mensaje) {
-
+        // Enviar mensaje a todos los usuarios conectados
         arraySockets.forEach((thread, socket) -> {
             try {
                 PrintStream salida = new PrintStream(socket.getOutputStream());
-                salida.println(mensaje); 
+                salida.println(mensaje);
             } catch (IOException e) {
                 System.err.println("Error al enviar mensaje a " + thread.getName() + ": " + e.getMessage());
             }
@@ -83,10 +78,10 @@ public class Chat implements Runnable {
     private void cerrarConexion() {
         try {
             socket.close();
-            arraySockets.remove(Thread.currentThread());
-            System.out.println("Conexion cerrada para el usuario " + nombre);
+            arraySockets.remove(Thread.currentThread());  // Eliminar el socket del cliente desconectado
+            System.out.println("Conexión cerrada para el usuario " + nombre);
         } catch (IOException e) {
-            System.err.println("Error al cerrar la conexion para el usuario " + nombre + ": " + e.getMessage());
+            System.err.println("Error al cerrar la conexión para el usuario " + nombre + ": " + e.getMessage());
         }
     }
 }

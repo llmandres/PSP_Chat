@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public class SocketServidor {
@@ -21,7 +22,7 @@ public class SocketServidor {
         try (ServerSocket serverSocket = new ServerSocket()) {
             serverSocket.bind(direccion);
             System.out.println("Esperando Peticiones");
-            Map<Thread, Socket> arraySockets = new HashMap<>();
+            Map<Thread, Socket> arraySockets = new ConcurrentHashMap();
             while(true) {
 
         
