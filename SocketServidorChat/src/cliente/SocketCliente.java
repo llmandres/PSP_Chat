@@ -46,7 +46,6 @@ public class SocketCliente {
 				String respuesta = entradaBuffer.readLine();
 				
 				
-				//nombre = entradaBuffer.readLine();
 				
 				if("OK".equalsIgnoreCase(respuesta)) {
 					continuar = false;
