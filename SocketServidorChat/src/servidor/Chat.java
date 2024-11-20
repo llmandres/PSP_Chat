@@ -22,10 +22,8 @@ public class Chat implements Runnable {
 
     @Override
     public void run() {
-        enviarMensajeATodos("Introduce el nombre de usuario");
 
         recogerUsuario();
-
         enviarMensajeATodos("** " + this.nombre + " se ha unido al chat **");
 
         mensajeRecibidoyEnviar();

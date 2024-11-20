@@ -12,7 +12,7 @@ import java.util.Scanner;
 public class SocketCliente {
 	
 	public static final int PUERTO = 4951;
-	public static final String IP_SERVER = "localhost";
+	public static final String IP_SERVER = "172.26.100.176";
 	
 	public static void main(String[] args) {
 		System.out.println("        CHAT CLIENTE         ");
@@ -35,27 +35,41 @@ public class SocketCliente {
 			PrintStream salida = new PrintStream(socketAlServidor.getOutputStream());
 			 salida.println(nombre);
 			 
-			String texto = "";
-			boolean continuar = true;
-			do {
-				System.out.println("CLIENTE: Escribe mensaje (FIN para terminar): ");
-				texto = sc.nextLine();//frase que vamos a mandar para contar				
-				
-				salida.println(texto);
-				System.out.println("CLIENTE: Esperando respuesta ...... ");				
-				String respuesta = entradaBuffer.readLine();
-				
-				
-				//nombre = entradaBuffer.readLine();
-				
-				if("OK".equalsIgnoreCase(respuesta)) {
-					continuar = false;
-				}else {
-					System.out.println(nombre + ":" + respuesta);
-				}				
-			}while(continuar);
-			//Cerramos la conexion
-			socketAlServidor.close();
+			 
+			 	String serverMessage = entradaBuffer.readLine();
+	            System.out.println("SERVER: " + serverMessage); 
+
+	            System.out.println("CLIENTE: Introduzca el nombre:");
+	            String nombre1 = sc.nextLine();
+	            salida.println(nombre1);
+	            String texto = "";
+	            boolean continuar = true;
+	            do {
+	                System.out.println("CLIENTE: Escribe mensaje (salir para terminar): ");
+	                texto = sc.nextLine();
+
+	                salida.println(texto);
+
+	                if ("salir".equalsIgnoreCase(texto)) {
+	                    continuar = false; 
+	                } else {
+	                    String respuesta = entradaBuffer.readLine();
+	                    System.out.println(respuesta);;
+
+	                    if (respuesta == null) {
+	                        System.err.println("El servidor ha cerrado la conexión.");
+	                        break;
+	                    } else {
+	                        System.out.println( respuesta);
+	                    }
+	                }
+
+	            } while (continuar);
+
+
+	            socketAlServidor.close();
+	            System.out.println("CLIENTE: Conexion cerrada.");
+
 		} catch (UnknownHostException e) {
 			System.err.println("CLIENTE: No encuentro el servidor en la direcci�n" + IP_SERVER);
 			e.printStackTrace();

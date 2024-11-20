@@ -26,7 +26,6 @@ public class SocketServidor {
 
         
                 socketAlCliente = serverSocket.accept();
-                System.out.println("Jugador conectado, esperando al segundo...");
                 arraySockets.put(Thread.currentThread() ,socketAlCliente);
 
 
