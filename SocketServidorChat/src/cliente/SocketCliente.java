@@ -64,6 +64,7 @@ public class SocketCliente {
 
                 if ("salir".equalsIgnoreCase(texto)) {
                     continuar = false; 
+                    recibirMensajes.stop();
                 } else {
                     String respuesta = entradaBuffer.readLine(); 
                     if (respuesta == null) {
