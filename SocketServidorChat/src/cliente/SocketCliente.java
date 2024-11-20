@@ -45,6 +45,10 @@ public class SocketCliente {
             boolean continuar = true;
             do {
 
+<<<<<<< HEAD
+=======
+                
+>>>>>>> c76665a0c98ec939f9f2345717d24d59df0f4a48
                 texto = sc.nextLine();
                 salida.println(texto);
 

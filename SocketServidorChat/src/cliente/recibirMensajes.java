@@ -5,12 +5,18 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
-public class recibirMensajes implements Runnable {
-    
-    private Socket socket;
-    
-    public recibirMensajes(Socket socket) {
-        this.socket = socket;
+public class recibirMensajes implements Runnable{
+	
+	private  boolean activo = true;
+	Socket socket;
+	
+	public recibirMensajes(Socket socket) {
+		this.socket = socket;
+	}
+
+    public void detener() {
+        activo = false;  
+
     }
 
     @Override
