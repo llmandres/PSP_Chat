@@ -34,8 +34,7 @@ public class SocketCliente {
 			
 			PrintStream salida = new PrintStream(socketAlServidor.getOutputStream());
 			 salida.println(nombre);
-			 
-			 
+
 			 	String serverMessage = entradaBuffer.readLine();
 	            System.out.println("SERVER: " + serverMessage); 
 
@@ -70,6 +69,7 @@ public class SocketCliente {
 	            socketAlServidor.close();
 	            System.out.println("CLIENTE: Conexion cerrada.");
 
+			socketAlServidor.close();
 		} catch (UnknownHostException e) {
 			System.err.println("CLIENTE: No encuentro el servidor en la direcci�n" + IP_SERVER);
 			e.printStackTrace();
