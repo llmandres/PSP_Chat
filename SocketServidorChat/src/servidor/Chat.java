@@ -98,7 +98,6 @@ public class Chat implements Runnable {
     }
 
     public static void imprimirUsuariosActivos() {
-        System.out.println("Usuarios activos:");
 
 
         arraySockets.forEach((thread, socket) -> {
