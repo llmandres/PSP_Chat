@@ -11,17 +11,24 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Chat implements Runnable {
     private String nombre;
     private static int contador = 0;
-    private static final Map<Thread, Socket> arraySockets = new ConcurrentHashMap<>();  // ConcurrentMap para seguridad
+
+
+    private static final Map<Thread, Socket> arraySockets = new ConcurrentHashMap<>();
+    
+
+    private static final Map<Thread, String> nombresUsuarios = new ConcurrentHashMap<>();
+
     private Socket socket;
 
     public Chat(Map<Thread, Socket> arraySockets, Socket socketAlCliente) {
         this.socket = socketAlCliente;
-        this.nombre = "Usuario " + (++contador); // Nombre por defecto
+        this.nombre = "Usuario " + (++contador); 
     }
 
     @Override
     public void run() {
         recogerUsuario();
+        imprimirUsuariosActivos();
         enviarMensajeATodos("** " + this.nombre + " se ha unido al chat **");
         mensajeRecibidoyEnviar();
     }
@@ -31,13 +38,17 @@ public class Chat implements Runnable {
             InputStreamReader entrada = new InputStreamReader(this.socket.getInputStream());
             BufferedReader entradaBuffer = new BufferedReader(entrada);
             String nombreCliente = entradaBuffer.readLine();
+            
             if (nombreCliente != null && !nombreCliente.trim().isEmpty()) {
                 this.nombre = nombreCliente;
             } else {
-                this.nombre = "Usuario" + contador;  
+                this.nombre = "Usuario" + contador;
             }
-            // Añadir socket a la lista de clientes conectados
+
+
             arraySockets.put(Thread.currentThread(), this.socket);
+            nombresUsuarios.put(Thread.currentThread(), this.nombre);
+
         } catch (IOException e) {
             System.err.println("Error al recoger el nombre del usuario: " + e.getMessage());
         }
@@ -51,11 +62,11 @@ public class Chat implements Runnable {
 
             while ((mensaje = entradaBuffer.readLine()) != null) {
                 if (mensaje.equalsIgnoreCase("salir")) {
-                    enviarMensajeATodos(nombre + " ha salido");
+                    enviarMensajeATodos("** " + nombre + " ha salido **");
                     cerrarConexion();
                     break;
                 } else {
-                    enviarMensajeATodos(nombre + ": " + mensaje);  // Enviar mensaje a todos los conectados
+                    enviarMensajeATodos(nombre + ": " + mensaje); 
                 }
             }
         } catch (IOException e) {
@@ -64,7 +75,7 @@ public class Chat implements Runnable {
     }
 
     public void enviarMensajeATodos(String mensaje) {
-        // Enviar mensaje a todos los usuarios conectados
+  
         arraySockets.forEach((thread, socket) -> {
             try {
                 PrintStream salida = new PrintStream(socket.getOutputStream());
@@ -78,10 +89,32 @@ public class Chat implements Runnable {
     private void cerrarConexion() {
         try {
             socket.close();
-            arraySockets.remove(Thread.currentThread());  // Eliminar el socket del cliente desconectado
+            arraySockets.remove(Thread.currentThread());
+            nombresUsuarios.remove(Thread.currentThread()); 
             System.out.println("Conexión cerrada para el usuario " + nombre);
         } catch (IOException e) {
             System.err.println("Error al cerrar la conexión para el usuario " + nombre + ": " + e.getMessage());
         }
+    }
+
+    public static void imprimirUsuariosActivos() {
+        System.out.println("Usuarios activos:");
+
+
+        arraySockets.forEach((thread, socket) -> {
+            try {
+                PrintStream salida = new PrintStream(socket.getOutputStream());
+                
+
+                salida.println("Usuarios activos:");
+
+                nombresUsuarios.forEach((otherThread, otherNombre) -> {
+                    salida.println("- " + otherNombre);
+                });
+
+            } catch (IOException e) {
+                System.err.println("Error al enviar la lista de usuarios activos a " + thread.getName() + ": " + e.getMessage());
+            }
+        });
     }
 }

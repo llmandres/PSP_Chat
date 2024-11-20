@@ -36,16 +36,15 @@ public class SocketCliente {
             PrintStream salida = new PrintStream(socketAlServidor.getOutputStream());
             salida.println(nombre);  
 
-            // Crear el hilo para recibir mensajes
+
             Thread recibirMensajes = new Thread(new recibirMensajes(socketAlServidor), "recibirMensajes");
             recibirMensajes.start();
 
-            // Enviar mensajes en el hilo principal
+
             String texto = "";
             boolean continuar = true;
             do {
 
-                System.out.println("CLIENTE: Escribe mensaje (salir para terminar): ");
                 texto = sc.nextLine();
                 salida.println(texto);
 
