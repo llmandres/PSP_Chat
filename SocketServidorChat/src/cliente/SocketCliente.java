@@ -36,6 +36,18 @@ public class SocketCliente {
             
             PrintStream salida = new PrintStream(socketAlServidor.getOutputStream());
             salida.println(nombre);  
+            
+            Thread recibirMensajes = new Thread(() -> {
+                try {
+                    String serverMessage;
+                    while ((serverMessage = entradaBuffer.readLine()) != null) {
+                        System.out.println("SERVER: " + serverMessage);
+                    }
+                } catch (IOException e) {
+                    System.err.println("CLIENTE: Error al recibir mensaje: " + e.getMessage());
+                }
+            });
+            recibirMensajes.start();
 
 
             String serverMessage = entradaBuffer.readLine();
